@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+ <html>
+ <head>
+ 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- Include jQuery Mobile stylesheets -->
+	<link rel="stylesheet" href="jquery.mobile-1.4.5.min.css">
+
+	<!-- Include the jQuery library -->
+	<script src="jquery.js"></script>
+
+	<script type="text/javascript" src = "feedback.js"></script>
+
+	<script src="jquery.mobile-1.4.5.min.js"></script>
+
+
+
+	   <script type="text/javascript" charset="utf-8">
+
+    // Wait for device API libraries to load
+    
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    // device APIs are available
+    //
+    function onDeviceReady() {
+        checkConnection();
+        $document.getElementById("scoreboard").addEventListener(click, showbrowser);
+        window.open = cordova.InAppBrowser.open
+    }
+    	function showBrowser(){
+    	 var url = "http://www.foxsports.com/soccer/scores";
+    	 var option = "location=yes";
+    	 var target = "_blank";
+    	 window.open(url);
+    	}
+
+        function checkConnection() {
+            var networkState = navigator.connection.type;
+
+            var states = {};
+            states[Connection.UNKNOWN]  = 'Unknown connection';
+            states[Connection.ETHERNET] = 'Ethernet connection';
+            states[Connection.WIFI]     = 'WiFi connection';
+            states[Connection.CELL_2G]  = 'Cell 2G connection';
+            states[Connection.CELL_3G]  = 'Cell 3G connection';
+            states[Connection.CELL_4G]  = 'Cell 4G connection';
+            states[Connection.CELL]     = 'Cell generic connection';
+            states[Connection.NONE]     = 'No network connection';
+
+            if (states[networkState] == states[Connection.NONE] ){
+            	alert("Oops, No Internet Connection!!");
+            }
+
+           
+        }
+
+      
+			
+			
+	</script>
+
+
+	<style type="text/css">
+	#listitems {
+		width:97%;
+		border-radius:5px;
+		
+	}
+	#listitems li{
+		background:#fefefe;
+		border-radius:5px;
+		margin:0px;
+		padding-right:10px;
+		padding-left:10px;
+		text-align:left;
+	}
+	#listitems a {
+		border-radius:5px;
+		padding-top:0px;
+		margin-top:0px;
+		padding:5px;
+		text-decoration:none;
+	}
+	#listitems h1 {
+		color:#89689d;
+	}
+	.content p{
+		color:#b3a1be;
+		font-size:13px;
+		font-style:bold;
+	}
+	.post_title{
+		text-align: left;
+		color:#89689d;
+	}
+	.postcontent{
+		width:100%;
+		height:80%;
+		
+	}
+	.postcontent span{
+		color:#b3a1be;
+	}
+		
+	</style>
+	<script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
+	<script>
+  // Initialize Firebase
+		  var config = {
+		    apiKey: "AIzaSyBToxzaBKuLa10Y4mUdHUqEghvVFYcWDIg",
+		    authDomain: "predictionapp-956f5.firebaseapp.com",
+		    databaseURL: "https://predictionapp-956f5.firebaseio.com",
+		    projectId: "predictionapp-956f5",
+		    storageBucket: "",
+		    messagingSenderId: "848371914242"
+		  };
+		  firebase.initializeApp(config);
+	</script>
+	
+	<!-- Include the jQuery Mobile library -->
+	
+
+	<script type="text/javascript">
+		//var posts = [];
+		//$(document).ready(function(){
+			var rootRef = firebase.database().ref().child("Posts");
+			rootRef.on("child_added", snap => {
+				var post_title = snap.child("Post_title").val();
+				var League_title = snap.child("League_Title").val();
+				var Match = snap.child("Match").val();
+				var Odds = snap.child("Odds").val();
+
+				$("#listitems").append('<li><div class="post_title"><h1>'+post_title+'</h1><hr></div><div class = "postcontent"><p><b>'+League_title+'</b><br><b>'+Match+'</b><br><span><b>'+Odds+'</b></span></p></div></li><br>');
+
+
+			});
+			
+
+		//});
+/*		 $(document).on("pagecontainerbeforechange", function(ev,ui){
+			if(ui.toPage[0].id === "vipage"){
+				if(sessionStorage.isLogin === true){
+					$.mobile.pageContainer.pagecontainer("change", "#postPredictons", {transition:"slide"});
+					ev.preventDefault();
+				};
+			}else if(ui.toPage[0].id === "pageone"){
+				iniList();
+			}
+		});
+
+		function registerUser(){
+			var username = $("#username").val();
+			var password = $("#password").val();
+
+			if (username == "Admin" && password == "1234567"){
+				$.mobile.pageContainer.pagecontainer("change", "#postPredictons", {transition:"slide"});
+
+				sessionStorage.isLogin = true;
+
+			}else{
+				$("#loginerrormsg").popup("open");
+				sessionStorage.isLogin = false;
+				
+			}
+
+		}
+		function logout()
+		{
+			sessionStorage.isLogin = false;
+			$.mobile.back();
+		}
+
+		function refresh()
+		{
+			$("#post_title").val("");
+			$("#post_content").val("");
+			var today = new Date();
+			alert(today);
+		}
+		function addPost(){
+			var post_title = $("#post_title").val();
+			var post_content = $("#post_content").val();
+			var date = new Date();	
+
+			var postObj = {post_title:post_title,post_content:post_content,date:date};
+			posts.push(postObj);
+			localStorage.allPosts = JSON.stringify(posts);
+			$("#success").popup("open");			
+			iniList();
+		}
+	 	function iniList(){
+
+			if(localStorage.allPosts){
+				$("#listitems").empty();
+				posts = JSON.parse(localStorage.allPosts);
+				for (var i = 0;i<posts.length;i++){
+					$("#listitems").append('<li><a href = ""><h1>'+posts[i].post_title+'</h1><div class = "postcontent"><p><b>'+posts[i].post_content+'</b><br><span><b>Post Time: '+posts[i].date+'</b></span></p></div></a></li><br>');
+
+				}
+			}	
+		}
+
+*/
+	</script>
+ 	<title>Betting App</title>
+ </head>
+ <body >
+ 	<div data-role = "page" id = "pageone"   style= "background:#523d61;background-size:cover;">
+ 		<div data-role = "header" data-position = "fixed" >
+ 		<div class = "top-heading" style = "padding:3px;padding-left:15px ; height:12px ; background-size: cover;background: #64d17e;">
+ 			<!-- <a href="#mypanel"><img src="assets/img/icon.png" height="14" width="19"/></a> -->
+		</div>
+
+ 		<div style="padding-right:5px;padding-left:5px;background:#523d61;background-size:cover;">	
+ 					
+ 			<div align = "center">
+	 			<img src="assets/img/logo2.png" height= "50"/>
+	  		</div>
+	  	</div>
+		 </div>
+ 		
+		 
+ 		<div>
+ 			
+ 		<div data-role = "main" id = "#main" class="ui-content" align = "center"  style="height:100%;padding-right:5px;padding-left:5px;background:#523d61;background-size:cover;">
+ 			<br>
+ 		<article style="padding: 10px;">
+ 			<ul data-role = "listview" id ="listitems" style="width:97%;" >
+ 				
+			</ul>
+ 		</article>
+ 		</div>	
+ 		
+ 		</div>
+ 		<!-- <div data-role= "panel" id = "mypanel" data-display = "overlay" style="color:#b3a1be;background:#f1e3e3;background-size:cover;padding-top:0;margin-top:0;padding-left:0;margin-left:0;">
+ 			<div data-role = "header" align="center">
+ 				<img src= "assets/img/logo1.png" height="50"/>
+  			</div>
+  			<hr>
+			<ul data-role="listview" data-inset = "true" style="border:none;box-shadow:none;">
+			      <li><a class = "ui-btn" href="#pageone" data-rel = "close" style="color:#523d61;font-size:17px; border-radius:5px;background:#f1e3e3;"><img src="assets/img/soccer.png" style="max-height:1.2em;max-width:1.2em;" alt="regular" class="ui-li-icon">Predictions</a>
+			      </li>
+			      <br>
+			     <li><a class = "ui-btn" href = "javascript:showBrowser()" id = "scoreboard" style="color:#523d61;font-size:17px; border-radius:5px;background:#f1e3e3;"><img src="assets/img/scores.png" style="max-height:1.2em;max-width:1.2em;" alt="vip" class="ui-li-icon">Score Board</a></li>
+			    	<br>
+			     <li><a class = "ui-btn" href="#"  style="color:#523d61;font-size:17px; border-radius:5px;background:#f1e3e3;"><img src="assets/img/rate.png" style="max-height:1.2em;max-width:1.2em;"alt="vip" class="ui-li-icon">Rate Us</a></li>
+			     <br>
+				   
+    		</ul>
+ 		</div> 
+ -->
+			      <div data-role = "popup" id = "novip" data-theme = "b" data-tolerancce = "15,15" data-overlay-theme = "b" class="ui-content">
+			      	<div>
+			      	<h3 style="color:#f1e3e3;">Vip Section is not Available!</h3>
+			      	</div>
+			      </div>
+			    	<div data-role = "popup" id = "dataOn" data-theme = "b" data-tolerancce = "15,15" data-overlay-theme = "b" class="ui-content">
+			      	<div>
+			      	<h3 style="color:#f1e3e3;">Oops! No Internet Connection</h3>
+			      	</div>
+			      </div>
+			        	
+
+		
+ 	
+
+ 		<div data-role ="footer" data-position = "fixed" style="height:25px; padding-bottom: 18px; padding-left:0; padding-right:0;background:#3d2d48;background-size:cover; margin-left:0;margin-right:0;width:100%;">
+ 				<ul style="list-style-type:none; margin-left:0px;width: 100%;">
+					<li style="display:inline;padding-right: 60px;" ><a href="#pageone"><img src="assets/img/homefilled.png" height="20" width="20" /></a></li>
+					<li style="display:inline;padding-right: 60px;" ><a href="javascript:showBrowser()" data-rel = "popup" data-position-to = "window" ><img src="assets/img/slipfilled.png"  height="20" width="20"/></a></li>
+					<li style="display:inline;padding-right: 60px;" ><i id = "vip"></i><a href="#novip" data-rel = "popup" data-position-to = "window"><img src="assets/img/vip.png"  height="20" width="20"/></a></li>
+					<li style="display:inline;" ><a href="#settings" data-transition = "slide" ><img src="assets/img/settingfilled.png"  height="20" width="20" /></a></li>
+				</ul> 				
+ 		</div>
+ 	</div>
+ 	</div>
+
+
+ 		<!--settings main page -->	
+ 		<div data-role = "page" id = "settings" style="background:#523d61;background-size:cover;">
+ 		<div data-role = "header" data-position = "fixed" >
+ 			<div class = "top-heading" style = "padding:3px;padding-left:15px ; height:12px ; background-size: cover;background: #64d17e;">
+ 			<!-- 	<a href="#mypanel"><img src="assets/img/icon.png" height="14" width="19"/></a> -->
+			</div>
+
+ 		<div align = "left" style="padding-right:5px;padding-left:10px;background:#3d2d48;background-size:cover;line-height:2.0;">	
+ 			<span style="font-size:23px;color:#fdfdfd; text-shadow:none;">Settings</span>
+ 			
+	  	</div>
+		 </div>
+ 		<div>
+ 			 <div data-role = "main" id = "#main" class="ui-content" align = "left"  style="height:100%;padding-left:0px;padding-right:0px;">
+ 			 	<a href="#about" data-rel="popup" data-position-to = "window" style="text-decoration:none;">
+	 			 	<div style="padding-left: 10px;padding-left:10px;line-height:2.0;">
+	 			 		<span style="font-size:18px;color:#fdfdfd; text-shadow:none;"><img style = "max-height:25px;max-width:23px;padding-right:30px;padding-top:10px ;" src="assets/img/info.png">About</span>
+	 			 	</div>
+	 			 </a>
+ 			 	<hr>
+ 			 	<a href="#feedback" style="text-decoration:none;">
+					<div style="padding-left: 10px;padding-left:10px;line-height:2.0;">
+	 			 		<span style="font-size:18px;color:#fdfdfd; text-shadow:none;"><img style = "max-height:25px;max-width:23px;padding-right:30px;padding-top:10px ;" src="assets/img/message.png">Feedback</span>
+	 			 	</div>
+	 			 </a>
+ 			 	<hr>    
+ 				<div data-role = "popup" id = "novip2" data-theme = "b" data-tolerancce = "15,15" data-overlay-theme="b" class="ui-content">
+			      	<div>
+			      	<h3 style="color:#f1e3e3;">Vip Section is not Available!</h3>
+			      	</div>
+			      </div>
+
+
+			        <div data-role = "popup" id = "about" data-theme = "b" data-tolerancce = "15,15" data-overlay-theme="b" class="ui-content" width = "97%">
+			     	 	<div>
+			      			<h3 style="color:#f1e3e3;">WinMax Predicts..</h3>
+			      			<p>1.0001</p>
+			      		</div>
+			      </div>
+		<div data-role ="footer" data-position = "fixed" style="height:25px; padding-bottom: 18px; padding-left:0; padding-right:0;background:#3d2d48;background-size:cover; margin-left:0;margin-right:0;width:100%;">
+ 				<ul style="list-style-type:none; margin-left:0px;width: 100%;">
+					<li style="display:inline;padding-right: 60px;" ><a href="#pageone" data-transition = "slide" data-direction= "reverse"><img src="assets/img/homefilled.png" height="20" width="20" /></a></li>
+					<li style="display:inline;padding-right: 60px;" ><a href="javascript:showBrowser()" data-rel = "popup" data-position-to = "window" ><img src="assets/img/slipfilled.png"  height="20" width="20"/></a></li>
+					<li style="display:inline;padding-right: 60px;" ><a href="#novip2"  data-position-to = "window" data-rel = "popup"><img src="assets/img/vip.png"  height="20" width="20"/></a></li>
+					<li style="display:inline;" ><a href="#settings" data-transition="slide"><img src="assets/img/settingfilled.png"  height="20" width="20" /></a></li>
+				</ul> 				
+ 		</div>
+ 		</div>		
+ 	</div>
+ 	</div>
+
+
+	<div data-role = "page" id = "feedback" style="background:#523d61;background-size:cover;">
+ 		<div data-role = "header" data-position = "fixed" >
+ 			<div class = "top-heading" style = "padding:3px;padding-left:15px ; height:12px ; background-size: cover;background: #64d17e;">
+ 			<!-- 	<a href="#mypanel"><img src="assets/img/icon.png" height="14" width="19"/></a> -->
+			</div>
+
+ 		<div align = "left" style="padding-right:5px;padding-left:10px;background:#3d2d48;background-size:cover;line-height:2.0;">	
+ 			<span style="font-size:23px;color:#fdfdfd; text-shadow:none;">Feedback</span>
+ 			
+	  	</div>
+		 </div>
+ 		<div>
+ 			 <div data-role = "main" id = "#main" class="ui-content" align = "left"  style="height:100%;padding-top:30px;padding-left:20px;padding-right:20px;">
+ 			 	
+ 			 	<div style="min-height:300px; max-height: 450px; background: #3d2d48;padding:20px;border-radius:10px;align-content: center; text-align:center;" >
+ 			 		<img src="assets/img/message.png">
+ 			 		<!-- form method = "post">
+ 			 		 -->	<input type="text" name="full-name" id = "full_name" placeholder="Enter Your Full Name"/>
+ 			 			<input type="text" name="location" id = "location" placeholder="Enter Your Location"/>
+ 			 			<textarea  id = "message" placeholder="Enter Feedback Message"></textarea>
+ 			 			<br>
+ 			 			<button id = "submitbtn" style="width: 30%; font-size:12px; margin:auto;color:#f4f4f4;background:#523d61;font-weight:normal;border:none;">Send</button>
+ 			 			<!-- </form>
+ 			 		 -->
+ 			 	</div>
+
+ 			 	<div data-role = "popup" id = "successMessage" data-theme = "b" data-tolerancce = "15,15" data-overlay-theme = "b" class="ui-content">
+			      	<div>
+			      	<h3 style="color:#f1e3e3;">Thanks For the Feedback</h3>
+			      	</div>
+				</div>
+				<div data-role = "popup" id = "errorMessage" data-theme = "b" data-tolerancce = "15,15" data-overlay-theme = "b" class="ui-content">
+			      	<div>
+			      	<h3 style="color:#f1e3e3;">Please Complete the form</h3>
+			      	</div>
+				</div>
+
+		<div data-role ="footer" data-position = "fixed" style="height:25px; padding-bottom: 18px; padding-left:0; padding-right:0;background:#3d2d48;background-size:cover; margin-left:0;margin-right:0;width:100%;">
+ 				<ul style="list-style-type:none; margin-left:0px;width: 100%;">
+					<li style="display:inline;padding-right: 60px;" ><a href="#pageone" data-transition = "slide" data-direction= "reverse"><img src="assets/img/homefilled.png" height="20" width="20" /></a></li>
+					<li style="display:inline;padding-right: 60px;" ><a href="javascript:showBrowser()" data-rel = "popup" data-position-to = "window" ><img src="assets/img/slipfilled.png"  height="20" width="20"/></a></li>
+					<li style="display:inline;padding-right: 60px;" ><a href="#novip2"  data-position-to = "window" data-rel = "popup"><img src="assets/img/vip.png"  height="20" width="20"/></a></li>
+					<li style="display:inline;" ><a href="#settings" data-transition="slide"><img src="assets/img/settingfilled.png"  height="20" width="20" /></a></li>
+				</ul> 				
+ 		</div>
+ 		</div>		
+ 	</div>
+ 	</div>
+
+ 	<!--Admin Section-->
+ 		
+ 				
+</body>
+
+ </html>

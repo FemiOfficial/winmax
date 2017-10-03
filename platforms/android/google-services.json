@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "848371914242",
+    "firebase_url": "https://predictionapp-956f5.firebaseio.com",
+    "project_id": "predictionapp-956f5",
+    "storage_bucket": "predictionapp-956f5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848371914242:android:25447430880a83b6",
+        "android_client_info": {
+          "package_name": "com.example.surewin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "848371914242-ngnf8m8pmisudpgb9v7mkkt0il0ov14u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9aK0x8DibeKwlWGrC_c6Eb1pgOcwOuWk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
